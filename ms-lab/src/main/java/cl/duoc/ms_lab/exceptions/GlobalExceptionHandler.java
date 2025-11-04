@@ -1,12 +1,12 @@
 package cl.duoc.ms_lab.exceptions;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import jakarta.validation.ConstraintViolationException;
 
 import java.time.Instant;
@@ -61,6 +61,14 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI(), null);
     }
 
+    // ✅ CORREGIDO: Unauthorized
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleUnauthorized(UnauthorizedException ex, jakarta.servlet.http.HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    // ✅ CORRECTO: Forbidden
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleForbidden(ForbiddenException ex, jakarta.servlet.http.HttpServletRequest req) {
@@ -77,6 +85,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleAccess(AccessDeniedException ex, jakarta.servlet.http.HttpServletRequest req) {
         return build(HttpStatus.FORBIDDEN, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    // (Opcional) Maneja ResponseStatusException para respetar el status lanzado
+    @ExceptionHandler(ResponseStatusException.class)
+    public ApiError handleResponseStatus(ResponseStatusException ex, jakarta.servlet.http.HttpServletRequest req) {
+        var status = ex.getStatusCode();
+        return build(HttpStatus.valueOf(status.value()), ex.getReason(), req.getRequestURI(), null);
     }
 
     @ExceptionHandler(Exception.class)

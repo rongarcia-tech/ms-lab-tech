@@ -5,6 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.net.URI;
@@ -36,6 +37,14 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    ProblemDetail handleUserForbidden(ForbiddenException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        pd.setTitle("Forbidden credentials");
+        pd.setType(URI.create("https://api.localhost:8080errors/business-rule"));
+        return pd;
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     ProblemDetail handleUserUnauthorized(UnauthorizedException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
@@ -43,6 +52,7 @@ public class GlobalExceptionHandler {
         pd.setType(URI.create("https://api.localhost:8080errors/business-rule"));
         return pd;
     }
+
 
     // Validación @Valid / @Validated: devuelve los errores de campos
     @ExceptionHandler(MethodArgumentNotValidException.class)

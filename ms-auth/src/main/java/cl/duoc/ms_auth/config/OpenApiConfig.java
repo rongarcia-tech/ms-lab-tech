@@ -27,7 +27,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI agroRentOpenAPI() {
         Info info = new Info()
-                .title("AgroRent API")
+                .title("MS Auth API")
                 .description("API para FullStack III.")
                 .version("v1.0.0")
                 .contact(new Contact()
